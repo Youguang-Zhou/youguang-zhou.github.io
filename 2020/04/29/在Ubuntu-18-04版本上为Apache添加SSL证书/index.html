@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.1"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>在Ubuntu-18-04版本上为Apache添加SSL证书 - Youguang&#039;s Blog</title><meta description="这篇博客将介绍如何在Ubuntu 18.04版本上为Apache添加SSL证书以及将HTTP的访问重定向到HTTPS。  SSL介绍SSL是Secure Sockets Layer的缩写，是一种用于安全加密通信的网络协议。"><meta property="og:type" content="blog"><meta property="og:title" content="在Ubuntu-18-04版本上为Apache添加SSL证书"><meta property="og:url" content="http://yoursite.com/2020/04/29/%E5%9C%A8Ubuntu-18-04%E7%89%88%E6%9C%AC%E4%B8%8A%E4%B8%BAApache%E6%B7%BB%E5%8A%A0SSL%E8%AF%81%E4%B9%A6/"><meta property="og:site_name" content="Youguang&#039;s Blog"><meta property="og:description" content="这篇博客将介绍如何在Ubuntu 18.04版本上为Apache添加SSL证书以及将HTTP的访问重定向到HTTPS。  SSL介绍SSL是Secure Sockets Layer的缩写，是一种用于安全加密通信的网络协议。"><meta property="og:locale" content="en_US"><meta property="og:image" content="http://yoursite.com/img/og_image.png"><meta property="article:published_time" content="2020-04-29T11:52:49.000Z"><meta property="article:modified_time" content="2020-06-08T15:14:41.032Z"><meta property="article:author" content="Youguang Zhou"><meta property="article:tag" content="Ubuntu"><meta property="article:tag" content="Apache"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://yoursite.com/2020/04/29/%E5%9C%A8Ubuntu-18-04%E7%89%88%E6%9C%AC%E4%B8%8A%E4%B8%BAApache%E6%B7%BB%E5%8A%A0SSL%E8%AF%81%E4%B9%A6/"},"headline":"Youguang's Blog","image":["http://yoursite.com/img/og_image.png"],"datePublished":"2020-04-29T11:52:49.000Z","dateModified":"2020-06-08T15:14:41.032Z","author":{"@type":"Person","name":"Youguang Zhou"},"description":"这篇博客将介绍如何在Ubuntu 18.04版本上为Apache添加SSL证书以及将HTTP的访问重定向到HTTPS。  SSL介绍SSL是Secure Sockets Layer的缩写，是一种用于安全加密通信的网络协议。"}</script><link rel="canonical" href="http://yoursite.com/2020/04/29/%E5%9C%A8Ubuntu-18-04%E7%89%88%E6%9C%AC%E4%B8%8A%E4%B8%BAApache%E6%B7%BB%E5%8A%A0SSL%E8%AF%81%E4%B9%A6/"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Welcome to Youguang&#039;s Blog!</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="View on GitHub" href="https://github.com/Youguang-Zhou/Youguang-Zhou.github.io"><i class="fab fa-github"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-29T11:52:49.000Z" title="2020-04-29T11:52:49.000Z">2020-04-29</time><span class="level-item"><a class="link-muted" href="/categories/Operations/">Operations</a></span><span class="level-item">4 minutes read (About 654 words)</span></div></div><h1 class="title is-3 is-size-4-mobile">在Ubuntu-18-04版本上为Apache添加SSL证书</h1><div class="content"><p><em>这篇博客将介绍如何在Ubuntu 18.04版本上为Apache添加SSL证书以及将HTTP的访问重定向到HTTPS。</em></p>
+<hr>
+<h1 id="SSL介绍"><a href="#SSL介绍" class="headerlink" title="SSL介绍"></a><strong>SSL介绍</strong></h1><p>SSL是Secure Sockets Layer的缩写，是一种用于安全加密通信的网络协议。</p>
+<a id="more"></a>
+
+<h1 id="为Apache添加强加密设置"><a href="#为Apache添加强加密设置" class="headerlink" title="为Apache添加强加密设置"></a><strong>为Apache添加强加密设置</strong></h1><p>首先在<code>/etc/apache2/conf-available</code>目录下新建一个名为<code>ssl-params.conf</code>的文件：</p>
+<pre><code>sudo nano /etc/apache2/conf-available/ssl-params.conf</code></pre><p>并在该文件里添加相应配置：</p>
+<pre><code>SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+SSLProtocol All -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
+SSLHonorCipherOrder On
+# Disable preloading HSTS for now.  You can use the commented out header line that includes
+# the &quot;preload&quot; directive if you understand the implications.
+# Header always set Strict-Transport-Security &quot;max-age=63072000; includeSubDomains; preload&quot;
+Header always set X-Frame-Options DENY
+Header always set X-Content-Type-Options nosniff
+# Requires Apache &gt;= 2.4
+SSLCompression off
+SSLUseStapling on
+SSLStaplingCache &quot;shmcb:logs/stapling-cache(150000)&quot;
+# Requires Apache &gt;= 2.4.11
+SSLSessionTickets Off</code></pre><p>然后保存。</p>
+<h1 id="修改默认的Apache-SSL虚拟主机文件"><a href="#修改默认的Apache-SSL虚拟主机文件" class="headerlink" title="修改默认的Apache SSL虚拟主机文件"></a><strong>修改默认的Apache SSL虚拟主机文件</strong></h1><p><em>如果你有自己的虚拟主机配置文件，只需把下面的<code>default</code>替换成相应的文件名。</em></p>
+<ul>
+<li><p>首先备份原来的配置文件：</p>
+<pre><code>sudo cp /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf.bak</code></pre></li>
+<li><p>然后打开并配置新的文件：</p>
+<pre><code>sudo nano /etc/apache2/sites-available/default-ssl.conf</code></pre></li>
+<li><p>修改并保存相应配置：</p>
+<pre><code>&lt;IfModule mod_ssl.c&gt;
+    &lt;VirtualHost _default_:443&gt;
+
+        ServerName server_domain_or_IP
+
+        DocumentRoot /var/www/html
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        SSLEngine on
+
+        SSLCertificateFile      /etc/ssl/certs/domain.pem
+        SSLCertificateKeyFile   /etc/ssl/private/domain.key
+
+        &lt;FilesMatch &quot;\.(cgi|shtml|phtml|php)$&quot;&gt;
+                        SSLOptions +StdEnvVars
+        &lt;/FilesMatch&gt;
+        &lt;Directory /usr/lib/cgi-bin&gt;
+                        SSLOptions +StdEnvVars
+        &lt;/Directory&gt;
+
+    &lt;/VirtualHost&gt;
+&lt;/IfModule&gt;</code></pre><p>  <em>1. 其中<code>SSLCertificateFile</code>和<code>SSLCertificateKeyFile</code>是相应的SSL证书和密钥。</em><br>  <em>2. 如果是为虚拟主机配置SSL，则需要修改<code>DocumentRoot</code>为该虚拟主机的网页文件目录。</em></p>
+</li>
+</ul>
+<h1 id="将HTTP重定向到HTTPS"><a href="#将HTTP重定向到HTTPS" class="headerlink" title="将HTTP重定向到HTTPS"></a><strong>将HTTP重定向到HTTPS</strong></h1><p><em>同样，对于虚拟主机，需要把下面的<code>default</code>替换成相应的文件名。</em></p>
+<p>首先打开相应配置文件：</p>
+<pre><code>sudo nano /etc/apache2/sites-available/000-default.conf</code></pre><p>并添加重定向指令<code>Redirect</code>：</p>
+<pre><code>&lt;VirtualHost *:80&gt;
+        . . .
+
+        Redirect &quot;/&quot; &quot;https://your_domain_or_IP/&quot;
+
+        . . .
+&lt;/VirtualHost&gt;</code></pre><p>最后保存。</p>
+<p>如果想设置成<strong>永久重定向</strong>，则需要将命令<code>Redirect</code>改为<code>Redirect permanent</code>。</p>
+<h1 id="调整防火墙使其接受HTTPS连接"><a href="#调整防火墙使其接受HTTPS连接" class="headerlink" title="调整防火墙使其接受HTTPS连接"></a><strong>调整防火墙使其接受HTTPS连接</strong></h1><pre><code>sudo ufw allow &apos;Apache Full&apos;</code></pre><h1 id="使所有配置生效"><a href="#使所有配置生效" class="headerlink" title="使所有配置生效"></a><strong>使所有配置生效</strong></h1><ul>
+<li><p>使<code>mod_ssl``和mod_headers</code>生效：</p>
+<pre><code>sudo a2enmod ssl
+sudo a2enmod headers</code></pre></li>
+<li><p>使配置SSL的虚拟主机生效：</p>
+</li>
+</ul>
+<p><em>视个人情况更改default文件名</em></p>
+<pre><code>sudo a2ensite default-ssl</code></pre><ul>
+<li><p>使<code>ssl-params.conf</code>文件生效：</p>
+<pre><code>sudo a2enconf ssl-params</code></pre></li>
+<li><p>检查有无句法错误：</p>
+<pre><code>sudo apache2ctl configtest</code></pre></li>
+<li><p>最后重启Apache：</p>
+<pre><code>sudo systemctl restart apache2</code></pre></li>
+</ul>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a><strong>测试</strong></h1><p>以HTTP或HTTPS访问该域名即可。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a><strong>Reference</strong></h1><p>[1] B. Boucheron, “How To Create a Self-Signed SSL Cert for Apache in Ubuntu 18.04,” <em>DigitalOcean</em>, 05-Jul-2018. [Online]. Available: <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-apache-in-ubuntu-18-04">https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-apache-in-ubuntu-18-04</a>.</p>
+</div><div class="article-tags size-small is-uppercase mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Ubuntu/">Ubuntu</a><a class="link-muted mr-2" rel="tag" href="/tags/Apache/">Apache</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/04/29/%E8%A7%A3%E5%86%B3Apache%E4%B8%8AAH00558%E7%9A%84%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">解决Ubuntu上AH00558的错误提示</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/29/%E5%9C%A8Ubuntu-18-04%E7%89%88%E6%9C%AC%E4%B8%8A%E6%AD%A3%E7%A1%AE%E9%85%8D%E7%BD%AE%E9%98%B2%E7%81%AB%E5%A2%99/"><span class="level-item">在Ubuntu 18.04版本上正确配置防火墙</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="is-rounded" src="/img/avatar.jpeg" alt="Youguang Zhou"></figure><p class="title is-size-4 is-block line-height-inherit">Youguang Zhou</p><p class="is-size-6 is-block">Do the right things.</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>University of Liverpool</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">25</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">7</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">8</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/Youguang-Zhou" target="_blank" rel="noopener">Follow</a></div></div></div><!--!--><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">Tags</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Algorithm/"><span class="tag">Algorithm</span><span class="tag is-grey-lightest">10</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Apache/"><span class="tag">Apache</span><span class="tag is-grey-lightest">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Bug/"><span class="tag">Bug</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/CSS/"><span class="tag">CSS</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Hooks/"><span class="tag">Hooks</span><span class="tag is-grey-lightest">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/React/"><span class="tag">React</span><span class="tag is-grey-lightest">11</span></a></div><div class="control"><a class="tags has-addons" href="/tags/UI/"><span class="tag">UI</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Ubuntu/"><span class="tag">Ubuntu</span><span class="tag is-grey-lightest">5</span></a></div></div></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">Categories</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/Learning-Notes/"><span class="level-start"><span class="level-item">Learning Notes</span></span><span class="level-end"><span class="level-item tag">10</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/Learning-Notes/Algorithm/"><span class="level-start"><span class="level-item">Algorithm</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/Operations/"><span class="level-start"><span class="level-item">Operations</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/React/"><span class="level-start"><span class="level-item">React</span></span><span class="level-end"><span class="level-item tag">11</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/React/Notes/"><span class="level-start"><span class="level-item">Notes</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/React/UI-Library/"><span class="level-start"><span class="level-item">UI Library</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/React/Useful-Hooks/"><span class="level-start"><span class="level-item">Useful Hooks</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li></ul></li></ul></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">Recent</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2020-07-07T14:01:57.000Z">2020-07-07</time></p><p class="title is-6"><a class="link-muted" href="/2020/07/07/React-Useful-Hooks-useDimension/">React-Useful-Hooks-useDimension</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/React/">React</a> / <a class="link-muted" href="/categories/React/Useful-Hooks/">Useful Hooks</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-06-16T09:47:11.000Z">2020-06-16</time></p><p class="title is-6"><a class="link-muted" href="/2020/06/16/React-Useful-Hooks-useIsMountedRef/">React Useful Hooks: useIsMountedRef</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/React/">React</a> / <a class="link-muted" href="/categories/React/Useful-Hooks/">Useful Hooks</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-06-16T08:50:28.000Z">2020-06-16</time></p><p class="title is-6"><a class="link-muted" href="/2020/06/16/React-Learning-Clean-up-in-useEffect-hook/">React Learning: Clean up in useEffect hook</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/React/">React</a> / <a class="link-muted" href="/categories/React/Notes/">Notes</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-06-08T16:02:50.000Z">2020-06-09</time></p><p class="title is-6"><a class="link-muted" href="/2020/06/09/React-Learning-Using-styled-components/">React Learning: Using styled-components</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/React/">React</a> / <a class="link-muted" href="/categories/React/Notes/">Notes</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-06-08T15:47:54.000Z">2020-06-08</time></p><p class="title is-6"><a class="link-muted" href="/2020/06/08/React-Learning-Using-Router-Show-404-Page/">React Learning: Using Router Show 404 Page</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/React/">React</a> / <a class="link-muted" href="/categories/React/Notes/">Notes</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">Archives</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2020/07/"><span class="level-start"><span class="level-item">July 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2020/06/"><span class="level-start"><span class="level-item">June 2020</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2020/05/"><span class="level-start"><span class="level-item">May 2020</span></span><span class="level-end"><span class="level-item tag">10</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2020/04/"><span class="level-start"><span class="level-item">April 2020</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li></ul></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Welcome to Youguang&#039;s Blog!</a><p class="size-small"><span>&copy; 2020 Youguang Zhou</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="View on GitHub" href="https://github.com/Youguang-Zhou/Youguang-Zhou.github.io"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            site: {
+                url: 'http://yoursite.com',
+                external_link: {"enable":true,"exclude":[]}
+            },
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to Top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>
